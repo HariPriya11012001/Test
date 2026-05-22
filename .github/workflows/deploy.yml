@@ -6,6 +6,9 @@ on:
       - main
       - dev
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -15,28 +18,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js
+      # 2. Setup Node.js 24
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
 
       # 3. Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4. Build project with dynamic base path
+      # 4. Build React project
       - name: Build project
         run: |
           export BASE_PATH=/${{ github.ref_name }}/
           npm run build
 
-      # 5. Deploy build files to GitHub Pages
+      # 5. Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           destination_dir: ${{ github.ref_name }}
-
-
